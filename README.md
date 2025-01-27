@@ -26,6 +26,7 @@ Usuario de teste criado localmente
 
 
 
+Criar 2 usuarios para conseguir fazer a transferencias entre contas
 
 
 //dotnet ef migrations add Init -p ../Base.Data -s ../Base.Api
