@@ -38,46 +38,20 @@ public class Result<T>
     public static implicit operator Result<T>(T value) => Sucess(value);
     public static explicit operator T?(Result<T> value) => value.Value;
 
-
-    public IActionResult ToActionResult(ControllerBase controller)
+public IActionResult ToActionResult(ControllerBase controller)
+{
+    return Status switch
     {
-        if (Status == CommandResultStatus.Ok)
-        {
-            return _value == null ? controller.NoContent() : controller.Ok(_value);
-        }
-
-        if (Status == CommandResultStatus.InvalidInput)
-        {
-            return controller.BadRequest(Errors);
-        }
-
-        if (Status == CommandResultStatus.Created)
-        {
-            return controller.StatusCode(201, _value);
-        }
-
-        if (Status == CommandResultStatus.AlreadyExists)
-        {
-            return controller.BadRequest(Errors);
-        }
-
-        if (Status == CommandResultStatus.Unknown)
-        {
-            return controller.StatusCode(500, Errors);
-        }
-
-        if (Status == CommandResultStatus.NotFound)
-        {
-            return controller.NotFound(Errors);
-        }
-
-        if (Status == CommandResultStatus.BusinessError)
-        {
-            return controller.UnprocessableEntity(Errors);
-        }
-
-        throw new InvalidOperationException($"Status {Status} was not mapped to a status code");
-    }
+        CommandResultStatus.Ok => _value == null ? controller.NoContent() : controller.Ok(_value),
+        CommandResultStatus.InvalidInput => controller.BadRequest(Errors),
+        CommandResultStatus.Created => controller.StatusCode(201, _value),
+        CommandResultStatus.AlreadyExists => controller.BadRequest(Errors),
+        CommandResultStatus.Unknown => controller.StatusCode(500, Errors),
+        CommandResultStatus.NotFound => controller.NotFound(Errors),
+        CommandResultStatus.BusinessError => controller.UnprocessableEntity(Errors),
+        _ => throw new InvalidOperationException($"Status {Status} was not mapped to a status code")
+    };
+}
 }
 
 public enum CommandResultStatus
